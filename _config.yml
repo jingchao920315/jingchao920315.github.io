@@ -1,23 +1,38 @@
 # Site settings
-
-title: 经超的博客 # Title of your site
-email: jingchao920315@gmail.com # Your contant email
-
-description: Android博客 # this means to ignore newlines until "baseurl:"
-
+title: 经超的微博
+email: jingchao920315@gmail.com
+description: > # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http:/jingchao920315.github.io" # the base hostname & protocol for your site
+url: "http://yourdomain.com" # the base hostname & protocol for your site
 
-# Social links.
-# Replace the word 'example' with your username if you want to include the icon in the left sidebar
-# Delete the word 'example' if you don't want to include the icon in the left sidebar
 
-twitter_username:     example  # Replace this with your Twitter username
-github_username:      http:/jingchao920315.github.io  # Replace this with your GitHub username
-linkedin_username:    example  # Replace this with your LinkedIn username
-google_plus_username: example  # Replace this with your Google+ username
-facebook_username:    example  # Replace this with your Facebook username
-dribbble_username:    example  # Replace this with your Dribbble username
+# Sidebar filter
+# Choose 'tag' or 'category' as filter in sidebar.
+filter: 'tag'
+
+
+# Social account
+# twitter:  username
+# weibo:    ID
+# github:   username
+# codepen:  username
+# dribbble: username
+
+
+# Comment
+# disqus_shortname: discussion_shortname
+
+
+# Google Analytics
+# google_analytics: tracking_ID
+
 
 # Build settings
 markdown: kramdown
+sass:
+  style: compressed
+gems:
+  - jekyll-sitemap
