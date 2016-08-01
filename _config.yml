@@ -3,8 +3,8 @@
 title: 经超的博客 # Title of your site
 email: jingchao920315@gmail.com # Your contant email
 
-description: > # this means to ignore newlines until "baseurl:"
-Android 博客
+description: Android 博客 # this means to ignore newlines until "baseurl:"
+
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http:/jingchao920315.github.io" # the base hostname & protocol for your site
 
