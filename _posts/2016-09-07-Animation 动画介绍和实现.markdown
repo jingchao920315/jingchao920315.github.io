@@ -111,7 +111,7 @@ rotate	RotateAnimation
  
 
 ####4.2 scale 渐变尺寸伸缩动画效果
-----
+
 
 	<?xml version="1.0" encoding="utf-8"?>
 	<set xmlns:android="http://schemas.android.com/apk/res/android" >
