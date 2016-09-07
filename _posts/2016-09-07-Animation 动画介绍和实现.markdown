@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "Animation 动画介绍和实现"
-subtitle:   " \"Hello World, Hello Blog\""
+subtitle:   " \"Hello Animation\""
 date:       2016-09-07 12:00:00
 author:     "jc"
 header-img: "img/post-bg-2015.jpg"
