@@ -1,0 +1,385 @@
+---
+layout:     post
+title:      "Gradle 学习"
+subtitle:   " \"Hello Gradle\""
+date:        2016-09-07 12:00:00
+author:     "jc"
+header-img: "img/post-bg-2015.jpg"
+catalog: true
+tags:
+    - android
+    - Gradle
+---
+gradle的简单介绍
+--
+
+Gradle是可以用于Android开发的新一代的Build System，也是Android Studio默认的build工具。其实Gradle脚本是基于一种JVM语言— Groovy，再加上DSL组成的。由于Groovy是JVM语言，所以可以使用大部分的Java语言库。所谓DSL就是专门针对Android开发的插件，比如标准Gradle之外的一些新的方法（Method）、闭包（Closure）等等。通过我们简单的了解知道Gradle的语法足够简洁和简单，而且可以使用大部分的java包，所以它就当之无愧地成为新一代的Build
+ System。
+
+我想使用过Android Studio的都知道，使用Android Studio新建一个工程后，默认会生成两个build.gralde文件，一个位于工程根目录，一个位于app目录下。如下所示：
+
+$ find -name build.gradle
+
+./app/build.gradle
+
+./build.gradle
+
+还有另外一个文件 --settings.gradle。
+
+根目录下的脚本文件是针对module的全局配置，它的作用域所包含的所有module是通过settings.gradle来配置。
+
+app文件夹就是一个module，如果在当前工程中添加了一个新的module — lib，就需要在settings.gralde文件中包含这个新的module。
+
+2、深入了解其基本结构
+
+我们用工程例子来深入的了解一下它的基本结构。
+
+①、根目录的build.gradle的内容所示如下：
+
+	buildscript {
+	
+	repositories {
+	
+	jcenter()
+	
+	}
+	
+	dependencies {
+	
+	classpath 'com.android.tools.build:gradle:1.0.0-rc4'
+	
+	}
+	
+	}
+	
+	
+	allprojects {
+	
+	repositories {
+	
+	jcenter()
+	
+	
+	maven {
+	
+	url 'http://mvnrepo.xxx.com/mvn/repository'
+	
+	}
+	
+	}
+	
+	}
+
+解释：classpath 'com.android.tools.build:gradle:1.0.0-rc4'就是Android特有的插件，maven仓库地址通过方法jCenter() 获取，这也是默认的maven仓库。当然也可以添加额外的maven仓库地址，例如以上文件中的
+
+	maven {
+	
+	url 'http://mvnrepo.xxx.com/mvn/repository'
+	
+	}
+
+②、app目录下的build.gradle的内容展示如下：
+
+	//设置脚本的运行环境
+	
+	buildscript {
+	
+	//支持java 依赖库管理（maven/ivy）,用于项目的依赖。
+	
+	repositories {
+	
+	mavenCentral()
+	
+	}
+	
+	//依赖包的定义。支持maven/ivy，远程，本地库，也支持单文件
+	
+	dependencies {
+	
+	classpath 'com.android.tools.build:gradle:0.4'
+	
+	}
+	
+	}
+	
+	//声明构建的项目类型，这里当然是android了
+	
+	apply plugin: 'android'
+	
+	//设置编译android项目的参数
+	
+	android {
+	
+	compileSdkVersion 17
+	
+	buildToolsVersion "17"
+	
+	
+	defaultConfig {
+	
+	minSdkVersion 8
+	
+	targetSdkVersion 17
+	
+	}
+	
+	//Android默认配置
+	
+	sourceSets {
+	
+	main {
+	
+	manifest.srcFile 'AndroidManifest.xml'
+	
+	java.srcDirs = ['src']
+	
+	resources.srcDirs = ['src']
+	
+	aidl.srcDirs = ['src']
+	
+	renderscript.srcDirs = ['src']
+	
+	res.srcDirs = ['res']
+	
+	assets.srcDirs = ['assets']
+	
+	}
+	
+	//测试所在的路径，这里假设是tests文件夹，没有可以不写这一行
+	
+	instrumentTest.setRoot('tests')
+	
+	}
+	
+	
+	//这个是解决lint报错的代码
+	
+	lintOptions {
+	
+	abortOnError false
+	
+	}
+	
+	/**
+	
+	* 签名设置
+	
+	*/
+	
+	signingConfigs {
+	
+	myConfigs {
+	
+	storeFile file("签名文件地址")
+	
+	keyAlias "..."
+	
+	keyPassword "..."
+	
+	storePassword "..."
+	
+	}
+	
+	}
+	
+	/**
+	
+	* 混淆设置
+	
+	*/
+	
+	buildTypes {
+	
+	release {
+	
+	signingConfig signingConfigs.myConfigs
+	
+	runProguard true
+	
+	proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+	
+	}
+	
+	}
+	
+	/**
+	
+	* 渠道打包（不同包名）
+	
+	*/
+	
+	productFlavors {
+	
+	qqqq {
+	
+	applicationId = '包名'
+	
+	}
+	
+	hhhhh {
+	
+	applicationId='包名'
+	
+	}
+	
+	}
+	
+	}
+	
+	/**
+	
+	* .so文件的导入
+	
+	*/
+	
+	task copyNativeLibs(type: Copy) {
+	
+	from fileTree(dir: 'libs', include: 'armeabi/*.so') into 'build/lib'
+	
+	}
+	
+	
+	tasks.withType(Compile) {
+	
+	options.encoding = "UTF-8"
+	
+	}
+	
+	
+	tasks.withType(Compile) {
+	
+	compileTask -> compileTask.dependsOn copyNativeLibs
+	
+	}
+	
+	clean.dependsOn 'cleanCopyNativeLibs'
+	
+	tasks.withType(com.android.build.gradle.tasks.PackageApplication) { pkgTask ->
+	
+	pkgTask.jniFolders = [new File(buildDir, 'lib')]
+	
+	}
+	
+	//依赖库
+	
+	dependencies {
+	
+	compile fileTree(dir: 'libs', include: ['*.jar'])
+	
+	}
+	
+	包依赖使用aar时分为本地依赖和远程依赖，分别如下：
+	
+	本地依赖：
+	
+	gradle 作为构建工具，能够很方便的使用本地jar包，以下为使用的代码块：
+	
+	dependencies { 
+	
+	//单文件依赖
+	
+	compile files('libs/android-support-v4.jar') 
+	
+	//某个文件夹下面全部依赖
+	
+	compile fileTree(dir: 'libs', include: '*.jar')
+	
+	}
+	
+	
+	android {
+	
+	
+	}
+	
+	远程依赖：
+	
+	gradle 同时支持maven，ivy，我们用maven 作为例子，以下为代码块：
+	
+	repositories { 
+	
+	//从中央库里面获取依赖
+	
+	mavenCentral() 
+	
+	//或者使用指定的本地maven 库
+	
+	maven{
+	
+	url "file://F:/githubrepo/releases"
+	
+	} 
+	
+	//或者使用指定的远程maven库
+	
+	maven{
+	
+	url "远程库地址"
+	
+	}
+	
+	}
+	
+	
+	dependencies { 
+	
+	//应用格式: packageName:artifactId:version
+	
+	compile 'com.google.android:support-v4:r13'}
+	
+	
+	android {
+	
+	
+	}
+
+对于项目依赖 android library的话，就不是依赖一个jar，那么简单了，在这里需要使用gradle mulit project 机制。在过去，android library并没有一个很好的包管理方式，简单来说，在gradle出现以前，官方并没有一种用于管理android library 依赖包的方式，一般我们都是直接下载别人的android library project 源码进行集成，而对于第三方的android-maven-plugin 用的是apklib 格式。而现在，官方终于推出一种android
+ library的打包格式，扩展名为*.aar。前面提到，目前android gradle插件并不支持本地直接使用*.aar文件，对android library 进行打包直接在library项目下面使用gradle build 即可，然后，你就会在 build/libs 目录下看到两个*.aar文件，一个debug包用的，一个是release 下用的，看个人需求使用，这里我们用的是release 版本的 .aar 文件。
+
+
+
+
+引用脚本跟前面讲的依赖库相似：
+
+	dependencies {
+	
+	compile(name: 'pulltorefresh', ext: 'aar')
+	
+	}
+
+
+
+
+包依赖jar：
+
+依赖多个jar时：
+
+	compile group: 'com.alibaba', module: 'fastjson', version: 'latest.integration'
+
+我们其实可以简写成：
+
+	
+
+而latest.integration可以替换成具体的版本号，这里是获取服务器上的最新版本。
+
+如果要去除重复依赖可以这样：
+
+	compile 'com.alibaba.fastjson.latest.integration' {
+	
+	exclude module: 'annotations', group: 'com.google.android'
+	
+	}
+
+3、命令执行脚本
+
+在Android工程根目录下会自动生成一个shell脚本 - gradlew，执行之前记得加上x属性 - chomod +x gradlew
+gradle脚本中包含了很多 task，可以通过task名来指定需要执行的task。
+
+
+
+	./gradlew build./gradlew assemble./gradlew assembleInnderDebug
+
+4、总结说明
+
+我估计现在大部分开发的项目普遍使用的是maven，但是不知道为什么，使用Gradle时经常会遇到一些无法获取远程依赖包的问题，最简单的解决办法就是把依赖包下载的本地。所以建议大家尽量使用本地依赖。如果介绍了这些你还不是太明白，那你可以自己在网上搜一些相关的知识学习学习，或者自己找些资料进行了解，最好的学习就是挑战自己而不是依赖别人。
+
