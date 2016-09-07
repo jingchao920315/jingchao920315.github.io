@@ -7,6 +7,9 @@ author:     "jc"
 header-img: "img/post-bg-2015.jpg"
 catalog: true
 tags:
+    - 学习 
+    - android
+---
 【Android 基础】Animation 动画介绍和实现
 ====================================
 
