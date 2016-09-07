@@ -10,7 +10,7 @@ tags:
     - 学习 
     - android
 ---
-【Android 基础】Animation 动画介绍和实现
+Animation动画介绍和实现
 ====================================
 
 1.Animation 动画类型
@@ -110,7 +110,7 @@ rotate	RotateAnimation
 
  
 
-4.2 scale 渐变尺寸伸缩动画效果
+####4.2 scale 渐变尺寸伸缩动画效果
 ----
 
 	<?xml version="1.0" encoding="utf-8"?>
